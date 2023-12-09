@@ -3,8 +3,10 @@ import { TouchableOpacity, View, Linking, TextInput, Button, Alert, StyleSheet, 
 
 export default function HomeScreen(props) {
     const [credentials, setCredentials] = useState({
-        "phone_number": "03108559858",
+        "full_name": "francis gill",
+        "phone_number": "0554501484",
         "password": "secret",
+        "password_confirmation": "secret"
     });
     const [loading, setLoading] = useState(false); // New state to handle loading
 
@@ -12,11 +14,11 @@ export default function HomeScreen(props) {
         setCredentials({ ...credentials, [name]: value });
     };
 
-    const handleLogin = async () => {
+    const handleRegister = async () => {
         setLoading(true);
 
 
-        const apiUrl = 'https://backend.florencetech.online/api/login';
+        const apiUrl = 'https://backend.florencetech.online/api/register';
 
         try {
             const response = await fetch(apiUrl, {
@@ -38,7 +40,7 @@ export default function HomeScreen(props) {
                 return;
             }
 
-            Alert.alert("Success", "Your account has been Logged In");
+            Alert.alert("Success", "Your account has been registered");
 
         } catch (error) {
             setLoading(false);
@@ -46,13 +48,34 @@ export default function HomeScreen(props) {
             // Handle API call errors
         }
     };
+    const handlePress = async () => {
+        const url = 'https://www.google.com'; // Replace with your desired URL
+        try {
+            const supported = await Linking.canOpenURL(url);
+
+            if (supported) {
+                await Linking.openURL(url);
+            } else {
+                console.log("Don't know how to open URL: " + url);
+            }
+        } catch (error) {
+            console.error('Error opening the link: ', error);
+        }
+    };
 
     return (
         <View style={styles.container}>
+
             <Image source={require('../assets/circle.jpg')} style={styles.image} />
 
             <Text >Welcome to App</Text>
 
+            <TextInput
+                style={styles.input}
+                placeholder="full name"
+                onChangeText={(value) => handleInputChange('full_name', value)}
+                value={credentials.full_name}
+            />
             <TextInput
                 style={styles.input}
                 placeholder="phone number"
@@ -66,16 +89,22 @@ export default function HomeScreen(props) {
                 value={credentials.password}
                 secureTextEntry
             />
-            <TouchableOpacity onPress={handleLogin} disabled={loading} style={styles.button}>
+            <TextInput
+                style={styles.input}
+                placeholder="confirm password"
+                onChangeText={(value) => handleInputChange('password_confirmation', value)}
+                value={credentials.password_confirmation}
+                secureTextEntry
+            />
+            <TouchableOpacity onPress={handleRegister} disabled={loading} style={styles.button}>
                 <View style={styles.buttonContainer}>
                     <Text style={styles.buttonText}>Submit</Text>
                 </View>
             </TouchableOpacity>
-            {/* <Button style={styles.button} title="Submit" color='purple' onPress={handleLogin} disabled={loading} /> */}
+            {/* <Button style={styles.button} title="Submit" color='purple' onPress={handleRegister} disabled={loading} /> */}
             {loading && <ActivityIndicator style={styles.loading} size="small" color="#0000ff" />}
-            {/* <Text style={{ marginTop: 10 }}>C?</Text> */}
-            <TouchableOpacity onPress={() => props.navigation.navigate("Register")} >
-                <Text style={{ color: 'black', textAlign: 'center', marginTop: 20 }}>Dont have account? Signup here</Text>
+            <TouchableOpacity onPress={() => props.navigation.navigate("Login")} >
+                <Text style={{ color: 'black', textAlign: 'center', marginTop: 20 }}>Existing user? Click to login</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => props.navigation.navigate("Home")} >
                 <Text style={{ color: 'black', textAlign: 'center', marginTop: 20 }}>Home Page</Text>
@@ -115,7 +144,7 @@ const styles = StyleSheet.create({
         width: 250,
         height: 250,
         resizeMode: 'contain',
-        marginTop: -100,
+        marginTop: 30,
     },
     button: {
         width: 320,
